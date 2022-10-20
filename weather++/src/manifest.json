@@ -1,0 +1,15 @@
+{
+    "name": "Weather++",
+    "short_name": "Weather++",
+    "start_url": ".",
+    "background_color": "#ADABAB",
+    "theme_color": "#EE6565",
+    "display": "standalone",
+    "icons":[
+        {
+        "src": "images/placeholder-icon.png",
+        "sizes": "512x512",
+        "type": "image/png"
+        }
+    ]
+}
