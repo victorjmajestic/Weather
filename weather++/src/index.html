@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset ="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,6 +13,83 @@
         <h1>Weather++</h1>
         <p>sample text</p>
         <script src="/src/index.js"></script>
+
+        <button onclick="getWeatherInfo()">Use My Location</button>
+
+        <p id="User Locale"></p>
+        <p id ="Forecast Data"></p>
+
+        <script>
+            const x = document.getElementById("User Locale");
+            const y = document.getElementById("Forecast Data")
+
+
+            function getLocation() {
+                let location;
+                try {
+                    navigator.geolocation.getCurrentPosition(showPosition);
+                } catch {
+                    x.innerHTML = err;
+                }
+                    function showPosition(position) {
+                    x.innerHTML = "Latitude: " + position.coords.latitude + 
+                    "<br>Longitude: " + position.coords.longitude;
+                    location = position.coords.latitude + "," + position.coords.longitude;
+                    return location;
+                }  
+            } 
+            async function getWeatherInfo() {
+                location = getLocation();
+                try {
+                    let metaRes = await fetch("https://api.weather.gov/points/" + location, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    return await JSON.parse(metaRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                }
+            }
+            async function getForecast() {
+                let forecastURL = await getWeatherInfo().properties.forecast;
+                try {
+                    let forecastRes = await fetch("forecastURL", {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    let forecast = await JSON.parse(forecastRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                y.innerHTML = forecast.properties.periods[1];
+            }
+            /*    fetch("https://api.weather.gov/points/" + position.coords.latitude + "," + position.coords.longitude, {
+                    "method": "GET",
+                    "headers": {
+                        //accept: application/geo+json
+                    }
+                })
+                .then((response) => response.json())
+                .then((data) => console.log(data))
+                .then(())
+                //.then(response => {
+                //    console.log(data);
+                //})
+                .catch(err => {
+                    console.error(err);
+                });
+                let forecasturl = data.properties.forecast;
+                fetch(forecasturl, {
+                    "method": "GET",
+                    "headers": {}
+                })
+                .then((response) => response.json())
+                .then((data) => console.log(data))
+            }*/
+        </script>
+
     </body>
 
 </html>
