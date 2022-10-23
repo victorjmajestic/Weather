@@ -7,63 +7,84 @@
         <title>Weather++</title>
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="/images/placeholder-icon.png">
+        <link rel="stylesheet" href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css"/>
     </head>
 
     <body>
         <h1>Weather++</h1>
-        <p>sample text</p>
         <script src="/src/index.js"></script>
 
-        <button onclick="getWeatherInfo()">Use My Location</button>
+        <button onclick="getLocation()">Use My Location</button>
 
         <p id="User Locale"></p>
-        <p id ="Forecast Data"></p>
+        <p id ="Forecast Data1"></p>
+        <p id ="Forecast Data2"></p>
+        <p id ="Forecast Data3"></p>
 
         <script>
             const x = document.getElementById("User Locale");
-            const y = document.getElementById("Forecast Data")
+            const first = document.getElementById("Forecast Data1")
+            const second = document.getElementById("Forecast Data2")
+            const third = document.getElementById("Forecast Data3")
 
 
             function getLocation() {
-                let location;
-                try {
-                    navigator.geolocation.getCurrentPosition(showPosition);
-                } catch {
+
+                if(navigator.geolocation) {
+                    return navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
                     x.innerHTML = err;
                 }
-                    function showPosition(position) {
+            }
+            function showPosition(position) {
+                    let location;
                     x.innerHTML = "Latitude: " + position.coords.latitude + 
                     "<br>Longitude: " + position.coords.longitude;
                     location = position.coords.latitude + "," + position.coords.longitude;
-                    return location;
-                }  
-            } 
-            async function getWeatherInfo() {
-                location = getLocation();
+                    console.log(position.coords);
+                    getWeatherInfo(location);
+            }  
+            async function getWeatherInfo(location) {
+                //location = getLocation();
+                console.log("https://api.weather.gov/points/" + location);
                 try {
                     let metaRes = await fetch("https://api.weather.gov/points/" + location, {
                         "method": "GET",
                         "headers": {}
                     });
-                    return await JSON.parse(metaRes.json());
+                    let data = await metaRes.json();
+                    console.log(data);
+                    //x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.properties.relativeLocation.state;
+                    getForecast(data);
+                    //return await JSON.parse(metaRes.json());
                 }
                 catch (error) {
                     console.log(error);
                 }
             }
-            async function getForecast() {
-                let forecastURL = await getWeatherInfo().properties.forecast;
+            async function getForecast(metaData) {
+                //let forecastURL = await getWeatherInfo().properties.forecast;
+                let forecast;
+                let forecastURL = metaData.properties.forecast;
+                console.log(forecastURL);
                 try {
-                    let forecastRes = await fetch("forecastURL", {
+                    let forecastRes = await fetch(forecastURL, {
                         "method": "GET",
                         "headers": {}
                     });
-                    let forecast = await JSON.parse(forecastRes.json());
+                    forecast = await (forecastRes.json());
                 }
                 catch (error) {
                     console.log(error);
                 }
-                y.innerHTML = forecast.properties.periods[1];
+                let html = '';
+                let localData = forecast.properties.periods[1];
+                /*localData.forEach(data => {
+                    let htmlSegment = `<p class ="weatherinfo">${data}</p>`;
+                })*/
+                first.innerHTML =  forecast.properties.periods[0].name + "'s temperature: " + forecast.properties.periods[0].temperature + forecast.properties.periods[0].temperatureUnit;
+                second.innerHTML =  forecast.properties.periods[1].name + "'s temperature: " + forecast.properties.periods[1].temperature + forecast.properties.periods[1].temperatureUnit;
+                third.innerHTML =  forecast.properties.periods[2].name + "'s temperature: " + forecast.properties.periods[2].temperature + forecast.properties.periods[2].temperatureUnit;
             }
             /*    fetch("https://api.weather.gov/points/" + position.coords.latitude + "," + position.coords.longitude, {
                     "method": "GET",
@@ -89,6 +110,21 @@
                 .then((data) => console.log(data))
             }*/
         </script>
+
+         <!--unit test script -->
+         <div id="mocha"></div>
+         <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+         <script src="https://cdn.rawgit.com/chaijs/chai/3.5.0/chai.js"></script>
+         <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+         <script>
+             const mocha = window.mocha;
+             mocha.setup('bdd');
+           </script>
+           <script src="unittests.js"></script>
+           <script>
+             mocha.checkLeaks();
+             mocha.run();
+           </script>
 
     </body>
 
