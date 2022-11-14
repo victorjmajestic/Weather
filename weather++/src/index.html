@@ -15,6 +15,10 @@
         <script src="/src/index.js"></script>
 
         <button onclick="getLocation()">Use My Location</button>
+        <div class = "search location">
+            <input id="search" type="text" name="locsearch" size ="20"></input>
+            <button onclick="getSearchLoc()">Search</button>
+        </div>
 
         <p id="User Locale"></p>
         <p id ="Forecast Data1"></p>
@@ -36,6 +40,33 @@
                     x.innerHTML = err;
                 }
             }
+            async function getSearchLoc() {
+                //console.log("http://api.positionstack.com/v1/forward");
+                const accesskey = '548170605874db23ae9a3125956d3e44';
+                let searchvalue = document.getElementById('search').value;
+                let request = "http://api.positionstack.com/v1/forward?access_key=" + accesskey + "&query=" + searchvalue.replace(/ /g, '%20') + "&output=json";
+                console.log(request);
+                try {
+                    let posRes = await fetch(request, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    let searchdata = await posRes.json();
+                    console.log(searchdata);
+                    let searchcoords = searchdata.data[0].latitude + "," + searchdata.data[0].longitude;
+                    getWeatherInfo(searchcoords);
+                    console.log(searchdata.data[0].latitude);
+                    console.log(searchdata.data[0].longitude);
+                    x.innerHTML=searchdata.data[0].name + ", " + searchdata.data[0].region_code;
+                    //x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.properties.relativeLocation.state;
+                    //getForecast(data);
+                    //return await JSON.parse(metaRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                    x.innerHTML=searchdata.error.code;
+                }
+            }
             function showPosition(position) {
                     let location;
                     x.innerHTML = "Latitude: " + position.coords.latitude + 
@@ -45,7 +76,6 @@
                     getWeatherInfo(location);
             }  
             async function getWeatherInfo(location) {
-                //location = getLocation();
                 console.log("https://api.weather.gov/points/" + location);
                 try {
                     let metaRes = await fetch("https://api.weather.gov/points/" + location, {
@@ -79,38 +109,11 @@
                 }
                 let html = '';
                 let localData = forecast.properties.periods[1];
-                /*localData.forEach(data => {
-                    let htmlSegment = `<p class ="weatherinfo">${data}</p>`;
-                })*/
+
                 first.innerHTML =  forecast.properties.periods[0].name + "'s temperature: " + forecast.properties.periods[0].temperature + forecast.properties.periods[0].temperatureUnit;
                 second.innerHTML =  forecast.properties.periods[1].name + "'s temperature: " + forecast.properties.periods[1].temperature + forecast.properties.periods[1].temperatureUnit;
                 third.innerHTML =  forecast.properties.periods[2].name + "'s temperature: " + forecast.properties.periods[2].temperature + forecast.properties.periods[2].temperatureUnit;
             }
-            /*    fetch("https://api.weather.gov/points/" + position.coords.latitude + "," + position.coords.longitude, {
-                    "method": "GET",
-                    "headers": {
-                        //accept: application/geo+json
-                    }
-                })
-                .then((response) => response.json())
-                .then((data) => console.log(data))
-                .then(())
-                //.then(response => {
-                //    console.log(data);
-                //})
-                .catch(err => {
-                    console.error(err);
-                });
-                let forecasturl = data.properties.forecast;
-                fetch(forecasturl, {
-                    "method": "GET",
-                    "headers": {}
-                })
-                .then((response) => response.json())
-                .then((data) => console.log(data))
-            }*/
-
-            
         </script>
 
         <!--service worker script-->
