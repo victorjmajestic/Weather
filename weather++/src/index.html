@@ -109,22 +109,27 @@
                 .then((response) => response.json())
                 .then((data) => console.log(data))
             }*/
+
+            
         </script>
 
-         <!--unit test script -->
-         <div id="mocha"></div>
-         <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
-         <script src="https://cdn.rawgit.com/chaijs/chai/3.5.0/chai.js"></script>
-         <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
-         <script>
-             const mocha = window.mocha;
-             mocha.setup('bdd');
-           </script>
-           <script src="unittests.js"></script>
-           <script>
-             mocha.checkLeaks();
-             mocha.run();
-           </script>
+        <!--service worker script-->
+        <script src="/src/index.js"></script>
+
+        <!--unit test script -->
+        <div id="mocha"></div>
+        <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
+        <script src="https://cdn.rawgit.com/chaijs/chai/3.5.0/chai.js"></script>
+        <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
+        <script>
+            const mocha = window.mocha;
+            mocha.setup('bdd');
+          </script>
+          <script src="unittests.js"></script>
+          <script>
+            mocha.checkLeaks();
+            mocha.run();
+          </script>
 
     </body>
 
