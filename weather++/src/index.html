@@ -14,13 +14,13 @@
         <h1>Weather++</h1>
         <script src="/src/index.js"></script>
 
+        <div>
         <button onclick="getLocation()">Use My Location</button>
-        <div class = "search location">
             <input id="search" type="text" name="locsearch" size ="20"></input>
             <button onclick="getSearchLoc()">Search</button>
         </div>
 
-        <p id="User Locale"></p>
+        <p id ="User Locale"></p>
         <p id ="Forecast Data1"></p>
         <p id ="Forecast Data2"></p>
         <p id ="Forecast Data3"></p>
@@ -44,7 +44,7 @@
                 //console.log("http://api.positionstack.com/v1/forward");
                 const accesskey = '548170605874db23ae9a3125956d3e44';
                 let searchvalue = document.getElementById('search').value;
-                let request = "http://api.positionstack.com/v1/forward?access_key=" + accesskey + "&query=" + searchvalue.replace(/ /g, '%20') + "&output=json";
+                let request = "http://api.positionstack.com/v1/forward?access_key=" + accesskey + "&query=" + searchvalue.replace(/ /g, '%20') + "&output=json&country=US";
                 console.log(request);
                 try {
                     let posRes = await fetch(request, {
@@ -84,7 +84,7 @@
                     });
                     let data = await metaRes.json();
                     console.log(data);
-                    //x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.properties.relativeLocation.state;
+                    x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
                     getForecast(data);
                     //return await JSON.parse(metaRes.json());
                 }
