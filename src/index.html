@@ -8,9 +8,127 @@
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="/images/placeholder-icon.png">
         <link rel="stylesheet" href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css"/>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+        <script setup>
+          import "@fontsource/public-sans";
+          import bootstrap from 'bootstrap';
+        </script>
         
+    </head>
+
+    <body>
+      <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Weather++</a>
+        </div>
+      </nav>
+        <script src="/src/index.js"></script>
+
         <!-- ALERTS -->
+
+        <!--div class="alert" id="firstalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <div class="alert" id="secondalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <div class="alert" id="thirdalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <script>
+          var close = document.getElementsByClassName("closebtn");
+          var i;
+          
+          for (i = 0; i < close.length; i++) {
+            close[i].onclick = function(){
+              var div = this.parentElement;
+              div.style.opacity = "0";
+              setTimeout(function(){ div.style.display = "none"; }, 600);
+            }
+          }
+          </script-->
+
+        <!-- LOCATION DATA -->
+
+        <div class="container pt-5 mb-5">
+          <div class="row">
+            <div class ="col-2">
+              <button class="btn btn-primary" onclick="getLocation();">Use My Location</button>
+            </div>
+            <div class ="col-8">
+              <input class="form-control" id="search" type="text" name="locsearch" size="20"></input>
+            </div>
+            <div class ="col-2">
+              <button class="btn btn-secondary" onclick="getSearchLoc();">Search</button>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          <div class="col">
+            <h2 id ="User Locale"></h2>
+            <!--p id ="Forecast Data1"></p>
+            <p id ="Forecast Data2"></p>
+            <p id ="Forecast Data3"></p-->
+            <button class="btn btn-light" id="button" onclick="saveLocation()" hidden>Save Location</button>
+            <button class="btn btn-light" id="button2" onclick="trackLocation()" hidden>Track Location</button><br></br>
+            <div class="dropdown">
+              <button class="dropbtn" id ="dayselect" hidden>Select which day to track!</button>
+              <div class="dropdown-content">
+                <a href="#" onclick="addTomorrowForecast()">Tomorrow</a>
+                <a href="#" onclick="addTwoDayForecast()">Two days from today</a>
+                <a href="#" onclick="addThreeDayForecast()">Three days from today</a>
+                <a href="#" onclick="addFourDayForecast()">Four days from today</a>
+                <a href="#" onclick="addFiveDayForecast()">Five days from today</a>
+                <a href="#" onclick="addSixDayForecast()">Six days from today</a>
+                <a href="#" onclick="addOneWeekForecast()">One week from today</a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <div class="card" style="width: 18rem;" id="Card1">
+                <div class="card-body">
+                  <h4 class="card-title" id="Forecast Data1"></h4>
+                  <h5 class="card-text" id="Temp">--° F</h5>
+                  <p class="card-text" id="LongDesc"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h4 class="card-title" id="Forecast Data2"></h4>
+                  <h5 class="card-text" id="Temp2">--° F</h5>
+                  <p class="card-text" id="LongDesc2"></p>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                  <h4 class="card-title" id="Forecast Data3"></h4>
+                  <h5 class="card-text" id="Temp3">--° F</h5>
+                  <p class="card-text" id="LongDesc3"></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+       
         <style>
+          .body {
+            font-family: "Public Sans";
+          }
+           /*ALERTS*/
           .alert {
             padding: 20px;
             background-color: #f44336;
@@ -35,10 +153,8 @@
           .closebtn:hover {
             color: black;
           }
-          </style>
 
-        <!-- SAVED LIST -->
-        <style>
+        /*SAVED LIST */
           .accordion {
             background-color: #eee;
             color: #444;
@@ -63,10 +179,7 @@
             overflow: hidden;
             transition: max-height 0.2s ease-out;
           }
-        </style>
-
-        <!--TRACKED LIST-->
-        <style>
+        /*TRACKED LIST*/
           .accordion2 {
             background-color: #eee;
             color: #444;
@@ -91,10 +204,7 @@
             overflow: hidden;
             transition: max-height 0.2s ease-out;
           }
-        </style>
-
-        <!-- DROP DOWN MENU -->
-        <style>
+          /*DROPDOWN MENU*/
           .dropbtn {
             background-color: #04AA6D;
             color: white;
@@ -129,73 +239,8 @@
           .dropdown:hover .dropdown-content {display: block;}
           
           .dropdown:hover .dropbtn {background-color: #3e8e41;}
-          </style>
+        </style>
           
-    </head>
-
-    <body>
-        <h1>Weather++</h1>
-        <script src="/src/index.js"></script>
-
-        <!-- ALERTS -->
-
-        <div class="alert" id="firstalert" hidden>
-          <span class="closebtn">&times;</span>  
-          <strong>Alert!</strong> See the expected weather forecast for:
-        </div>
-
-        <div class="alert" id="secondalert" hidden>
-          <span class="closebtn">&times;</span>  
-          <strong>Alert!</strong> See the expected weather forecast for:
-        </div>
-
-        <div class="alert" id="thirdalert" hidden>
-          <span class="closebtn">&times;</span>  
-          <strong>Alert!</strong> See the expected weather forecast for:
-        </div>
-
-        <script>
-          var close = document.getElementsByClassName("closebtn");
-          var i;
-          
-          for (i = 0; i < close.length; i++) {
-            close[i].onclick = function(){
-              var div = this.parentElement;
-              div.style.opacity = "0";
-              setTimeout(function(){ div.style.display = "none"; }, 600);
-            }
-          }
-          </script>
-
-        <!-- LOCATION DATA -->
-
-        <div>
-        <button onclick="getLocation(); toggle();">Use My Location</button>
-            <input id="search" type="text" name="locsearch" size ="20"></input>
-            <button onclick="getSearchLoc(); toggle();">Search</button>
-        </div>
-
-
-        <p id ="User Locale"></p>
-        <p id ="Forecast Data1"></p>
-        <p id ="Forecast Data2"></p>
-        <p id ="Forecast Data3"></p>
-
-        <button id="button" onclick="saveLocation()" hidden>Save Location</button>
-        <button id="button2" onclick="trackLocation()" hidden>Track Location</button><br></br>
-        <div class="dropdown">
-          <button class="dropbtn" id ="dayselect" hidden>Select which day to track!</button>
-          <div class="dropdown-content">
-            <a href="#" onclick="addTomorrowForecast()">Tomorrow</a>
-            <a href="#" onclick="addTwoDayForecast()">Two days from today</a>
-            <a href="#" onclick="addThreeDayForecast()">Three days from today</a>
-            <a href="#" onclick="addFourDayForecast()">Four days from today</a>
-            <a href="#" onclick="addFiveDayForecast()">Five days from today</a>
-            <a href="#" onclick="addSixDayForecast()">Six days from today</a>
-            <a href="#" onclick="addOneWeekForecast()">One week from today</a>
-          </div>
-        </div>
-
         <script>
             const x = document.getElementById("User Locale");
             const first = document.getElementById("Forecast Data1")
@@ -241,8 +286,6 @@
             }
             function showPosition(position) {
                     let location;
-                    x.innerHTML = "Latitude: " + position.coords.latitude + 
-                    "<br>Longitude: " + position.coords.longitude;
                     location = position.coords.latitude + "," + position.coords.longitude;
                     console.log(position.coords);
                     getWeatherInfo(location);
@@ -256,7 +299,7 @@
                     });
                     let data = await metaRes.json();
                     console.log(data);
-                    x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
+                    x.innerHTML = data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
                     weatherStation = data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
                     getForecast(data);
                     //return await JSON.parse(metaRes.json());
@@ -283,9 +326,17 @@
                 let html = '';
                 let localData = forecast.properties.periods[1];
 
-                first.innerHTML =  forecast.properties.periods[0].name + "'s temperature: " + forecast.properties.periods[0].temperature + forecast.properties.periods[0].temperatureUnit;
-                second.innerHTML =  forecast.properties.periods[1].name + "'s temperature: " + forecast.properties.periods[1].temperature + forecast.properties.periods[1].temperatureUnit;
-                third.innerHTML =  forecast.properties.periods[2].name + "'s temperature: " + forecast.properties.periods[2].temperature + forecast.properties.periods[2].temperatureUnit;
+                first.innerHTML =  forecast.properties.periods[0].name
+                document.getElementById("Temp").innerHTML = forecast.properties.periods[0].temperature + "° " + forecast.properties.periods[0].temperatureUnit;
+                document.getElementById("LongDesc").innerHTML = forecast.properties.periods[0].detailedForecast;
+                document.getElementById("Card1").style.borderColor = (30 + 240 * (30 - forecast.properties.periods[0].temperature) / 60, 50, 50);
+                second.innerHTML =  forecast.properties.periods[1].name
+                document.getElementById("Temp2").innerHTML = forecast.properties.periods[1].temperature + "° " + forecast.properties.periods[1].temperatureUnit;
+                document.getElementById("LongDesc2").innerHTML = forecast.properties.periods[1].detailedForecast;
+                third.innerHTML =  forecast.properties.periods[2].name
+                document.getElementById("Temp3").innerHTML = forecast.properties.periods[2].temperature + "° " + forecast.properties.periods[2].temperatureUnit;
+                document.getElementById("LongDesc3").innerHTML = forecast.properties.periods[2].detailedForecast;
+                toggle()
             }
         </script>
 
@@ -301,29 +352,71 @@
         </script>
 
 
-        <!-- SAVING LOCATIONS -->
+        
+        <div class="container mt-5">
+          <div class="row">
+            <div class="col">
+              <!-- SAVING LOCATIONS -->
+              <h2>Saved Locations</h2>
+              <p>Click on the buttons below to view your saved forecasts!</p>
+
+
+              <button class="accordion" id = "f1" hidden></button>
+              <div class="panel" id="panel1">
+                <p id ="weatherdata">Weather data for saved forecast 1</p>
+                <div class="container">
+                  <div class="row">
+                    <div class="col">
+                      <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast1()">Remove Forecast</button> <br><br>
+                    </div>
+                    <div class="col">
+                      <button class="btn btn-primary btn-sm" id="remfc" onclick="viewForecast1()">View Full Forecast</button> <br><br>                     
+                    </div>
+                  </div>
+                </div>
+                
+              </div>
+
+              <button class="accordion" id ="f2" hidden></button>
+              <div class="panel" id ="panel2">
+                <p id ="weatherdata2">Weather data for saved forecast 2</p>
+                <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast2()">Remove Forecast</button> <br><br>
+              </div>
+
+              <button class="accordion" id = "f3" hidden></button>
+              <div class="panel" id="panel3">
+                <p id ="weatherdata3">Weather data for saved forecast 3</p>
+                <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast3()">Remove Forecast</button> <br><br>
+              </div>
+            </div>
+            <div class="col">
+              <!--TRACKING LOCATIONS-->
+              <h2>Tracked Locations</h2>
+              <p>Click on the buttons below to view your tracked forecasts!</p>
+
+
+              <button class="accordion2" id="t1" hidden></button>
+              <div class="panel" id="panel4">
+                <p id = "weatherdata4">Weather data for tracked forecast 1</p>
+                <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast4()">Remove Forecast</button> <br><br>
+              </div>
+
+              <button class="accordion2" id="t2" hidden></button>
+              <div class="panel" id="panel5">
+                <p id = "weatherdata5">Weather data for tracked forecast 2</p>
+                <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast5()">Remove Forecast</button> <br><br>
+              </div>
+
+              <button class="accordion2" id="t3" hidden></button>
+              <div class="panel" id="panel6">
+                <p id = "weatherdata6">Weather data for tracked forecast 3</p>
+                <button class="btn btn-danger btn-sm" id="remfc" onclick="removeForecast6()">Remove Forecast</button> <br><br>
+              </div>
+            </div>
+          </div>
+        </div>
         <br></br>
-        <h2>Saved Locations</h2>
-        <p>Click on the buttons below to view your saved forecasts!</p>
-
-
-        <button class="accordion" id = "f1" hidden></button>
-        <div class="panel" id="panel1">
-          <p id ="weatherdata">Weather data for saved forecast 1</p>
-          <button id="remfc" onclick="removeForecast1()">Remove Forecast</button> <br><br>
-        </div>
-
-        <button class="accordion" id ="f2" hidden></button>
-        <div class="panel" id ="panel2">
-          <p id ="weatherdata2">Weather data for saved forecast 2</p>
-          <button id="remfc" onclick="removeForecast2()">Remove Forecast</button> <br><br>
-        </div>
-
-        <button class="accordion" id = "f3" hidden></button>
-        <div class="panel" id="panel3">
-          <p id ="weatherdata3">Weather data for saved forecast 3</p>
-          <button id="remfc" onclick="removeForecast3()">Remove Forecast</button> <br><br>
-        </div>
+        
 
         <script>
         var acc = document.getElementsByClassName("accordion");
@@ -356,7 +449,7 @@
           function saveLocation() {
             if (btn.textContent == '') {
               btn.textContent = weatherStation;
-              weatherForecast.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              weatherForecast.textContent = document.getElementById("Forecast Data1").innerHTML + ' — ' + document.getElementById("Temp").innerHTML;
               hidden = btn.getAttribute("hidden");
               btn.removeAttribute("hidden");
               hidden = p1.getAttribute("hidden");
@@ -364,7 +457,7 @@
             }
             else if (btn2.textContent == '') {
               btn2.textContent = weatherStation;
-              weatherForecast2.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              weatherForecast2.textContent = document.getElementById("Forecast Data1").innerHTML + ' — ' + document.getElementById("Temp").innerHTML;
               hidden = btn2.getAttribute("hidden");
               btn2.removeAttribute("hidden");
               hidden = p2.getAttribute("hidden");
@@ -372,7 +465,7 @@
             }
             else if (btn3.textContent == '') {
               btn3.textContent = weatherStation;
-              weatherForecast3.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              weatherForecast3.textContent = document.getElementById("Forecast Data1").innerHTML + ' — ' + document.getElementById("Temp").innerHTML;
               hidden = btn3.getAttribute("hidden");
               btn3.removeAttribute("hidden");
               hidden = p3.getAttribute("hidden");
@@ -412,7 +505,10 @@
             p3.setAttribute("hidden", "hidden");
             closePanels();
           }
-
+          function viewForecast1() {
+            document.getElementById('search').value = btn.innerHTML;
+            getSearchLoc()
+          }
           function closePanels() {
             let active = document.querySelectorAll(".accordion.active");
             for(let j = 0; j < active.length; j++){
@@ -423,29 +519,7 @@
         </script>
 
 
-        <!--TRACKING LOCATIONS-->
-        <br></br>
-        <h2>Tracked Locations</h2>
-        <p>Click on the buttons below to view your tracked forecasts!</p>
-
-
-        <button class="accordion2" id="t1" hidden></button>
-        <div class="panel" id="panel4">
-          <p id = "weatherdata4">Weather data for tracked forecast 1</p>
-          <button id="remfc" onclick="removeForecast4()">Remove Forecast</button> <br><br>
-        </div>
-
-        <button class="accordion2" id="t2" hidden></button>
-        <div class="panel" id="panel5">
-          <p id = "weatherdata5">Weather data for tracked forecast 2</p>
-          <button id="remfc" onclick="removeForecast5()">Remove Forecast</button> <br><br>
-        </div>
-
-        <button class="accordion2" id="t3" hidden></button>
-        <div class="panel" id="panel6">
-          <p id = "weatherdata6">Weather data for tracked forecast 3</p>
-          <button id="remfc" onclick="removeForecast6()">Remove Forecast</button> <br><br>
-        </div>
+        
 
         <script>
           var acc = document.getElementsByClassName("accordion2");
@@ -805,7 +879,7 @@
 
         </script>
 
-        <!-- NOTIFICATION CENTER -->
+        <!-- NOTIFICATION CENTER 
         <h3>Notifications</h3>
         <fieldset>
           <legend>Notify if the following conditions are expected in your area tomorrow:</legend>
@@ -819,7 +893,7 @@
             <input type="checkbox" id="snow" name="snow">
             <label for="snow">Snow</label>
           </div>
-      </fieldset>
+      </fieldset> -->
 
 
 

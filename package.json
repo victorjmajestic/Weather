@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@fontsource/public-sans": "^4.5.11",
+    "bootstrap": "^5.2.3"
+  }
+}
