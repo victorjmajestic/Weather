@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset ="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,19 +7,827 @@
         <title>Weather++</title>
         <link rel="manifest" href="manifest.json">
         <link rel="apple-touch-icon" href="/images/placeholder-icon.png">
-        <!--<link rel="stylesheet" href="style.css">-->
         <link rel="stylesheet" href="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.css"/>
+        
+        <!-- ALERTS -->
+        <style>
+          .alert {
+            padding: 20px;
+            background-color: #f44336;
+            color: white;
+            opacity: 1;
+            transition: opacity 0.6s;
+            margin-bottom: 15px;
+          }
+          .alert.warning {background-color: #ff9800;}
+          
+          .closebtn {
+            margin-left: 15px;
+            color: white;
+            font-weight: bold;
+            float: right;
+            font-size: 22px;
+            line-height: 20px;
+            cursor: pointer;
+            transition: 0.3s;
+          }
+          
+          .closebtn:hover {
+            color: black;
+          }
+          </style>
+
+        <!-- SAVED LIST -->
+        <style>
+          .accordion {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+          }
+          
+          .active, .accordion:hover {
+            background-color: #ccc;
+          }
+          
+          .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+          }
+        </style>
+
+        <!--TRACKED LIST-->
+        <style>
+          .accordion2 {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+            transition: 0.4s;
+          }
+          
+          .active, .accordion:hover {
+            background-color: #ccc;
+          }
+          
+          .panel {
+            padding: 0 18px;
+            background-color: white;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+          }
+        </style>
+
+        <!-- DROP DOWN MENU -->
+        <style>
+          .dropbtn {
+            background-color: #04AA6D;
+            color: white;
+            padding: 12px;
+            font-size: 12px;
+            border: none;
+          }
+          
+          .dropdown {
+            position: relative;
+            display: inline-block;
+          }
+          
+          .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f1f1f1;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+          }
+          
+          .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+          }
+          
+          .dropdown-content a:hover {background-color: #ddd;}
+          
+          .dropdown:hover .dropdown-content {display: block;}
+          
+          .dropdown:hover .dropbtn {background-color: #3e8e41;}
+          </style>
+          
     </head>
 
     <body>
         <h1>Weather++</h1>
-        <p>sample text</p>
-
-        <!--service worker script-->
         <script src="/src/index.js"></script>
 
-        <!--unit test script -->
-        <div id="mocha"></div>
+        <!-- ALERTS -->
+
+        <div class="alert" id="firstalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <div class="alert" id="secondalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <div class="alert" id="thirdalert" hidden>
+          <span class="closebtn">&times;</span>  
+          <strong>Alert!</strong> See the expected weather forecast for:
+        </div>
+
+        <script>
+          var close = document.getElementsByClassName("closebtn");
+          var i;
+          
+          for (i = 0; i < close.length; i++) {
+            close[i].onclick = function(){
+              var div = this.parentElement;
+              div.style.opacity = "0";
+              setTimeout(function(){ div.style.display = "none"; }, 600);
+            }
+          }
+          </script>
+
+        <!-- LOCATION DATA -->
+
+        <div>
+        <button onclick="getLocation(); toggle();">Use My Location</button>
+            <input id="search" type="text" name="locsearch" size ="20"></input>
+            <button onclick="getSearchLoc(); toggle();">Search</button>
+        </div>
+
+
+        <p id ="User Locale"></p>
+        <p id ="Forecast Data1"></p>
+        <p id ="Forecast Data2"></p>
+        <p id ="Forecast Data3"></p>
+
+        <button id="button" onclick="saveLocation()" hidden>Save Location</button>
+        <button id="button2" onclick="trackLocation()" hidden>Track Location</button><br></br>
+        <div class="dropdown">
+          <button class="dropbtn" id ="dayselect" hidden>Select which day to track!</button>
+          <div class="dropdown-content">
+            <a href="#" onclick="addTomorrowForecast()">Tomorrow</a>
+            <a href="#" onclick="addTwoDayForecast()">Two days from today</a>
+            <a href="#" onclick="addThreeDayForecast()">Three days from today</a>
+            <a href="#" onclick="addFourDayForecast()">Four days from today</a>
+            <a href="#" onclick="addFiveDayForecast()">Five days from today</a>
+            <a href="#" onclick="addSixDayForecast()">Six days from today</a>
+            <a href="#" onclick="addOneWeekForecast()">One week from today</a>
+          </div>
+        </div>
+
+        <script>
+            const x = document.getElementById("User Locale");
+            const first = document.getElementById("Forecast Data1")
+            const second = document.getElementById("Forecast Data2")
+            const third = document.getElementById("Forecast Data3")
+            var weatherStation = '';
+
+
+            function getLocation() {
+
+                if(navigator.geolocation) {
+                    return navigator.geolocation.getCurrentPosition(showPosition);
+                } else {
+                    x.innerHTML = err;
+                }
+            }
+            async function getSearchLoc() {
+                //console.log("http://api.positionstack.com/v1/forward");
+                const accesskey = '548170605874db23ae9a3125956d3e44';
+                let searchvalue = document.getElementById('search').value;
+                let request = "http://api.positionstack.com/v1/forward?access_key=" + accesskey + "&query=" + searchvalue.replace(/ /g, '%20') + "&output=json&country=US";
+                console.log(request);
+                try {
+                    let posRes = await fetch(request, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    let searchdata = await posRes.json();
+                    console.log(searchdata);
+                    let searchcoords = searchdata.data[0].latitude + "," + searchdata.data[0].longitude;
+                    getWeatherInfo(searchcoords);
+                    console.log(searchdata.data[0].latitude);
+                    console.log(searchdata.data[0].longitude);
+                    x.innerHTML=searchdata.data[0].name + ", " + searchdata.data[0].region_code;
+                    //x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.properties.relativeLocation.state;
+                    //getForecast(data);
+                    //return await JSON.parse(metaRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                    x.innerHTML=searchdata.error.code;
+                }
+            }
+            function showPosition(position) {
+                    let location;
+                    x.innerHTML = "Latitude: " + position.coords.latitude + 
+                    "<br>Longitude: " + position.coords.longitude;
+                    location = position.coords.latitude + "," + position.coords.longitude;
+                    console.log(position.coords);
+                    getWeatherInfo(location);
+            }  
+            async function getWeatherInfo(location) {
+                console.log("https://api.weather.gov/points/" + location);
+                try {
+                    let metaRes = await fetch("https://api.weather.gov/points/" + location, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    let data = await metaRes.json();
+                    console.log(data);
+                    x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
+                    weatherStation = data.properties.relativeLocation.properties.city + ", " + data.properties.relativeLocation.properties.state;
+                    getForecast(data);
+                    //return await JSON.parse(metaRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                }
+            }
+            async function getForecast(metaData) {
+                //let forecastURL = await getWeatherInfo().properties.forecast;
+                let forecast;
+                let forecastURL = metaData.properties.forecast;
+                console.log(forecastURL);
+                try {
+                    let forecastRes = await fetch(forecastURL, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    forecast = await (forecastRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                let html = '';
+                let localData = forecast.properties.periods[1];
+
+                first.innerHTML =  forecast.properties.periods[0].name + "'s temperature: " + forecast.properties.periods[0].temperature + forecast.properties.periods[0].temperatureUnit;
+                second.innerHTML =  forecast.properties.periods[1].name + "'s temperature: " + forecast.properties.periods[1].temperature + forecast.properties.periods[1].temperatureUnit;
+                third.innerHTML =  forecast.properties.periods[2].name + "'s temperature: " + forecast.properties.periods[2].temperature + forecast.properties.periods[2].temperatureUnit;
+            }
+        </script>
+
+        <script>
+          let toggle = () => {
+          let element = document.getElementById("button");
+          let hidden = element.getAttribute("hidden");
+          element.removeAttribute("hidden");
+          let element2 = document.getElementById("button2");
+          let hidden2 = element.getAttribute("hidden");
+          element2.removeAttribute("hidden");
+          }
+        </script>
+
+
+        <!-- SAVING LOCATIONS -->
+        <br></br>
+        <h2>Saved Locations</h2>
+        <p>Click on the buttons below to view your saved forecasts!</p>
+
+
+        <button class="accordion" id = "f1" hidden></button>
+        <div class="panel" id="panel1">
+          <p id ="weatherdata">Weather data for saved forecast 1</p>
+          <button id="remfc" onclick="removeForecast1()">Remove Forecast</button> <br><br>
+        </div>
+
+        <button class="accordion" id ="f2" hidden></button>
+        <div class="panel" id ="panel2">
+          <p id ="weatherdata2">Weather data for saved forecast 2</p>
+          <button id="remfc" onclick="removeForecast2()">Remove Forecast</button> <br><br>
+        </div>
+
+        <button class="accordion" id = "f3" hidden></button>
+        <div class="panel" id="panel3">
+          <p id ="weatherdata3">Weather data for saved forecast 3</p>
+          <button id="remfc" onclick="removeForecast3()">Remove Forecast</button> <br><br>
+        </div>
+
+        <script>
+        var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function() {
+            this.classList.toggle("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+              panel.style.maxHeight = null;
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            } 
+          });
+        }
+        </script>
+
+        <script>
+          const btn = document.getElementById('f1');
+          const btn2 = document.getElementById('f2');
+          const btn3 = document.getElementById('f3');
+          const p1 = document.getElementById('panel1');
+          const p2 = document.getElementById('panel2');
+          const p3 = document.getElementById('panel3');
+          const weatherForecast = document.getElementById('weatherdata');
+          const weatherForecast2 = document.getElementById('weatherdata2');
+          const weatherForecast3 = document.getElementById('weatherdata3');
+
+          function saveLocation() {
+            if (btn.textContent == '') {
+              btn.textContent = weatherStation;
+              weatherForecast.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              hidden = btn.getAttribute("hidden");
+              btn.removeAttribute("hidden");
+              hidden = p1.getAttribute("hidden");
+              p1.removeAttribute("hidden");
+            }
+            else if (btn2.textContent == '') {
+              btn2.textContent = weatherStation;
+              weatherForecast2.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              hidden = btn2.getAttribute("hidden");
+              btn2.removeAttribute("hidden");
+              hidden = p2.getAttribute("hidden");
+              p2.removeAttribute("hidden");
+            }
+            else if (btn3.textContent == '') {
+              btn3.textContent = weatherStation;
+              weatherForecast3.textContent = first.innerHTML + ' — ' + second.innerHTML + ' — ' + third.innerHTML;
+              hidden = btn3.getAttribute("hidden");
+              btn3.removeAttribute("hidden");
+              hidden = p3.getAttribute("hidden");
+              p3.removeAttribute("hidden");
+            }
+            else {
+              alert("Error! You have saved the maximum number of forecasts!")
+            }
+          }
+
+          function removeForecast1() {
+            btn.textContent = '';
+            weatherForecast.textContent = '';
+            hidden = btn.getAttribute("hidden");
+            btn.setAttribute("hidden", "hidden");
+            hidden = p1.getAttribute("hidden");
+            p1.setAttribute("hidden", "hidden");
+            closePanels();
+          }
+
+          function removeForecast2() {
+            btn2.textContent = '';
+            weatherForecast2.textContent = '';
+            hidden = btn2.getAttribute("hidden");
+            btn2.setAttribute("hidden", "hidden");
+            hidden = p2.getAttribute("hidden");
+            p2.setAttribute("hidden", "hidden");
+            closePanels();
+          }
+
+          function removeForecast3() {
+            btn3.textContent = '';
+            weatherForecast3.textContent = '';
+            hidden = btn3.getAttribute("hidden");
+            btn3.setAttribute("hidden", "hidden");
+            hidden = p3.getAttribute("hidden");
+            p3.setAttribute("hidden", "hidden");
+            closePanels();
+          }
+
+          function closePanels() {
+            let active = document.querySelectorAll(".accordion.active");
+            for(let j = 0; j < active.length; j++){
+              active[j].classList.remove("active");
+              active[j].nextElementSibling.style.maxHeight = null;
+            }
+          }
+        </script>
+
+
+        <!--TRACKING LOCATIONS-->
+        <br></br>
+        <h2>Tracked Locations</h2>
+        <p>Click on the buttons below to view your tracked forecasts!</p>
+
+
+        <button class="accordion2" id="t1" hidden></button>
+        <div class="panel" id="panel4">
+          <p id = "weatherdata4">Weather data for tracked forecast 1</p>
+          <button id="remfc" onclick="removeForecast4()">Remove Forecast</button> <br><br>
+        </div>
+
+        <button class="accordion2" id="t2" hidden></button>
+        <div class="panel" id="panel5">
+          <p id = "weatherdata5">Weather data for tracked forecast 2</p>
+          <button id="remfc" onclick="removeForecast5()">Remove Forecast</button> <br><br>
+        </div>
+
+        <button class="accordion2" id="t3" hidden></button>
+        <div class="panel" id="panel6">
+          <p id = "weatherdata6">Weather data for tracked forecast 3</p>
+          <button id="remfc" onclick="removeForecast6()">Remove Forecast</button> <br><br>
+        </div>
+
+        <script>
+          var acc = document.getElementsByClassName("accordion2");
+          var i;
+  
+          for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+              this.classList.toggle("active");
+              var panel = this.nextElementSibling;
+              if (panel.style.maxHeight) {
+                panel.style.maxHeight = null;
+              } else {
+                panel.style.maxHeight = panel.scrollHeight + "px";
+              } 
+            });
+          }
+          </script>
+
+        <script>
+          const btn4 = document.getElementById('t1');
+          const btn5 = document.getElementById('t2');
+          const btn6 = document.getElementById('t3');
+          const p4 = document.getElementById('panel4');
+          const p5 = document.getElementById('panel5');
+          const p6 = document.getElementById('panel6');
+          const weatherForecast4 = document.getElementById('weatherdata4');
+          const weatherForecast5 = document.getElementById('weatherdata5');
+          const weatherForecast6 = document.getElementById('weatherdata6');
+          const alert1 = document.getElementById('firstalert');
+          const alert2 = document.getElementById('secondalert');
+          const alert3 = document.getElementById('thirdalert');
+          const trackbutton = document.getElementById('dayselect');
+          
+          function trackLocation() {
+            if (btn4.textContent == '' || btn5.textContent == '' || btn6.textContent == '') {
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.removeAttribute("hidden");
+            }
+            else {
+              alert("Error! You have tracked the maximum number of forecasts!");
+            }}
+
+          function addTomorrowForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              weatherForecast4.textContent = third.innerHTML;
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              weatherForecast5.textContent = third.innerHTML;
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              weatherForecast6.textContent = third.innerHTML;
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addTwoDayForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addThreeDayForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addFourDayForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addFiveDayForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addSixDayForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function addOneWeekForecast() {
+            if (btn4.textContent == '') {
+              btn4.textContent = weatherStation;
+              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn4.getAttribute("hidden");
+              btn4.removeAttribute("hidden");
+              hidden = p4.getAttribute("hidden");
+              p4.removeAttribute("hidden");
+              hidden = alert1.getAttribute("hidden");
+              alert1.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn5.textContent == '') {
+              btn5.textContent = weatherStation;
+              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn5.getAttribute("hidden");
+              btn5.removeAttribute("hidden");
+              hidden = p5.getAttribute("hidden");
+              p5.removeAttribute("hidden");
+              hidden = alert2.getAttribute("hidden");
+              alert2.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+            else if (btn6.textContent == '') {
+              btn6.textContent = weatherStation;
+              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              hidden = btn6.getAttribute("hidden");
+              btn6.removeAttribute("hidden");
+              hidden = p6.getAttribute("hidden");
+              p6.removeAttribute("hidden");
+              hidden = alert3.getAttribute("hidden");
+              alert3.removeAttribute("hidden");
+              hidden = trackbutton.getAttribute("hidden");
+              trackbutton.setAttribute("hidden", "hidden");
+            }
+          }
+
+          function removeForecast4() {
+            btn4.textContent = '';
+            weatherForecast4.textContent = '';
+            hidden = btn4.getAttribute("hidden");
+            btn4.setAttribute("hidden", "hidden");
+            hidden = p4.getAttribute("hidden");
+            p4.setAttribute("hidden", "hidden");
+            hidden = alert1.getAttribute("hidden");
+            alert1.setAttribute("hidden", "hidden");
+            closePanels2();
+          }
+
+          function removeForecast5() {
+            btn5.textContent = '';
+            weatherForecast5.textContent = '';
+            hidden = btn5.getAttribute("hidden");
+            btn5.setAttribute("hidden", "hidden");
+            hidden = p5.getAttribute("hidden");
+            p5.setAttribute("hidden", "hidden");
+            alert2.setAttribute("hidden", "hidden");
+            closePanels2();
+          }
+
+          function removeForecast6() {
+            btn6.textContent = '';
+            weatherForecast6.textContent = '';
+            hidden = btn6.getAttribute("hidden");
+            btn6.setAttribute("hidden", "hidden");
+            hidden = p6.getAttribute("hidden");
+            p6.setAttribute("hidden", "hidden");
+            alert2.setAttribute("hidden", "hidden");
+            closePanels2();
+          }
+
+          function closePanels2() {
+            let active = document.querySelectorAll(".accordion2.active");
+            for(let j = 0; j < active.length; j++){
+              active[j].classList.remove("active");
+              active[j].nextElementSibling.style.maxHeight = null;
+            }
+          }
+
+        </script>
+
+        <!-- NOTIFICATION CENTER -->
+        <h3>Notifications</h3>
+        <fieldset>
+          <legend>Notify if the following conditions are expected in your area tomorrow:</legend>
+      
+          <div>
+            <input type="checkbox" id="rain" name="rain">
+            <label for="rain">Rain</label>
+          </div>
+      
+          <div>
+            <input type="checkbox" id="snow" name="snow">
+            <label for="snow">Snow</label>
+          </div>
+      </fieldset>
+
+
+
+        <!-- SERVICE WORKER -->
+        <script src="/src/index.js"></script>
+
+        <!-- UNIT TESTS -->
+        <!--<div id="mocha"></div>
         <script src="https://cdn.rawgit.com/Automattic/expect.js/0.3.1/index.js"></script>
         <script src="https://cdn.rawgit.com/chaijs/chai/3.5.0/chai.js"></script>
         <script src="https://cdn.rawgit.com/mochajs/mocha/2.2.5/mocha.js"></script>
@@ -32,7 +839,8 @@
           <script>
             mocha.checkLeaks();
             mocha.run();
-          </script>
+          </script>-->
+
     </body>
 
 </html>
