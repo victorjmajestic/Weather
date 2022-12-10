@@ -13,7 +13,7 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
         <script setup>
           import "@fontsource/public-sans";
-          import bootstrap from 'bootstrap';
+
         </script>
         
     </head>
@@ -275,9 +275,6 @@
                     console.log(searchdata.data[0].latitude);
                     console.log(searchdata.data[0].longitude);
                     x.innerHTML=searchdata.data[0].name + ", " + searchdata.data[0].region_code;
-                    //x.innerHTML = "Nearest Weather Station: " + data.properties.relativeLocation.properties.city + ", " + data.properties.properties.relativeLocation.state;
-                    //getForecast(data);
-                    //return await JSON.parse(metaRes.json());
                 }
                 catch (error) {
                     console.log(error);
@@ -337,6 +334,56 @@
                 document.getElementById("Temp3").innerHTML = forecast.properties.periods[2].temperature + "° " + forecast.properties.periods[2].temperatureUnit;
                 document.getElementById("LongDesc3").innerHTML = forecast.properties.periods[2].detailedForecast;
                 toggle()
+            }
+            async function getFutureData(period) {
+              const accesskey = '548170605874db23ae9a3125956d3e44';
+              let searchfor = document.getElementById("User Locale").innerHTML;
+              let request = "http://api.positionstack.com/v1/forward?access_key=" + accesskey + "&query=" + searchfor.replace(/ /g, '%20') + "&output=json&country=US";
+                console.log(request);
+                let searchcoords;
+                try {
+                    let posRes = await fetch(request, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    let searchdata = await posRes.json();
+                    searchcoords = searchdata.data[0].latitude + "," + searchdata.data[0].longitude;
+                }
+                catch (error) {
+                    console.log(error);
+                    x.innerHTML=searchdata.error.code;
+                }
+                let data;
+                try {
+                    let metaRes = await fetch("https://api.weather.gov/points/" + searchcoords, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    data = await metaRes.json();
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                let forecastURL = data.properties.forecast;
+                let forecast;
+                try {
+                    let forecastRes = await fetch(forecastURL, {
+                        "method": "GET",
+                        "headers": {}
+                    });
+                    forecast = await (forecastRes.json());
+                }
+                catch (error) {
+                    console.log(error);
+                }
+                let specforecast = forecast.properties.periods[period]
+                console.log(specforecast)
+                let result = specforecast.temperature + "° - " + specforecast.shortForecast;
+                console.log(result);
+                return({
+                  info: result,
+                  date: specforecast.name
+                });
             }
         </script>
 
@@ -588,10 +635,13 @@
               alert("Error! You have tracked the maximum number of forecasts!");
             }}
 
-          function addTomorrowForecast() {
+          async function addTomorrowForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              weatherForecast4.textContent = third.innerHTML;
+              let result = await getFutureData(3);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - Tomorrow";
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -602,8 +652,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              weatherForecast5.textContent = third.innerHTML;
+              let result = await getFutureData(3);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - Tomorrow";
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -614,8 +667,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              weatherForecast6.textContent = third.innerHTML;
+              let result = await getFutureData(3);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - Tomorrow";
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -627,10 +683,13 @@
             }
           }
 
-          function addTwoDayForecast() {
+          async function addTwoDayForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(4);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -641,8 +700,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(4);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -653,8 +715,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(4);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -666,10 +731,13 @@
             }
           }
 
-          function addThreeDayForecast() {
+          async function addThreeDayForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(5);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -680,8 +748,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(5);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -692,8 +763,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(5);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -705,10 +779,13 @@
             }
           }
 
-          function addFourDayForecast() {
+          async function addFourDayForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(6);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -719,8 +796,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(6);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -731,8 +811,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(6);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -744,10 +827,13 @@
             }
           }
 
-          function addFiveDayForecast() {
+          async function addFiveDayForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(7);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -758,8 +844,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(7);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -770,8 +859,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(7);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -783,10 +875,13 @@
             }
           }
 
-          function addSixDayForecast() {
+          async function addSixDayForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(8);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -797,8 +892,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(8);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -809,8 +907,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(8);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -822,10 +923,13 @@
             }
           }
 
-          function addOneWeekForecast() {
+          async function addOneWeekForecast() {
             if (btn4.textContent == '') {
-              btn4.textContent = weatherStation;
-              //weatherForecast4.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(9);
+              let val = result.info;
+              let date = result.date;
+              btn4.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast4.innerHTML = val;
               hidden = btn4.getAttribute("hidden");
               btn4.removeAttribute("hidden");
               hidden = p4.getAttribute("hidden");
@@ -836,8 +940,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn5.textContent == '') {
-              btn5.textContent = weatherStation;
-              //weatherForecast5.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(9);
+              let val = result.info;
+              let date = result.date;
+              btn5.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast5.innerHTML = val;
               hidden = btn5.getAttribute("hidden");
               btn5.removeAttribute("hidden");
               hidden = p5.getAttribute("hidden");
@@ -848,8 +955,11 @@
               trackbutton.setAttribute("hidden", "hidden");
             }
             else if (btn6.textContent == '') {
-              btn6.textContent = weatherStation;
-              //weatherForecast6.textContent = third.innerHTML; FORECAST FROM API
+              let result = await getFutureData(9);
+              let val = result.info;
+              let date = result.date;
+              btn6.textContent = document.getElementById("User Locale").innerHTML + " - " + date;
+              weatherForecast6.innerHTML = val;
               hidden = btn6.getAttribute("hidden");
               btn6.removeAttribute("hidden");
               hidden = p6.getAttribute("hidden");
@@ -905,24 +1015,7 @@
 
         </script>
 
-        <!-- NOTIFICATION CENTER 
-        <h3>Notifications</h3>
-        <fieldset>
-          <legend>Notify if the following conditions are expected in your area tomorrow:</legend>
-      
-          <div>
-            <input type="checkbox" id="rain" name="rain">
-            <label for="rain">Rain</label>
-          </div>
-      
-          <div>
-            <input type="checkbox" id="snow" name="snow">
-            <label for="snow">Snow</label>
-          </div>
-      </fieldset> -->
-
-
-
+        
         <!-- SERVICE WORKER -->
         <script src="/src/index.js"></script>
 
